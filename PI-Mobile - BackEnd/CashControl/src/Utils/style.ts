@@ -30,6 +30,12 @@ export const DetailsTransaction = styled.View `
     padding: 0 10px;
 `;
 
+export const DataTransaction = styled.Text `
+    font-family: 'InterRegular';
+    font-size: 12px;
+    font-weight: 400;
+`;
+
 export const NameTransaction = styled.Text `
     font-family: 'InterRegular';
     font-size: 16px;

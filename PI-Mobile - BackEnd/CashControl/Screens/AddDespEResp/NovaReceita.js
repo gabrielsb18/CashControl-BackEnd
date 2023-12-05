@@ -1,5 +1,5 @@
-import { View, Text, StyleSheet, TouchableOpacity} from "react-native";
-import React, { useState, useContext } from "react";
+import { View, Text, StyleSheet, TouchableOpacity, Image} from "react-native";
+import React, { useState, useContext,useEffect } from "react";
 import { TextInput } from "react-native-paper";
 import {SelectList} from 'react-native-dropdown-select-list';
 import { useFonts } from 'expo-font';
@@ -17,6 +17,8 @@ import * as yup from 'yup'
 import { TransacaoContext } from '../../src/Contexts/TransacoesContext';
 import { transactions } from "../../src/Utils/Transactions";
 
+import DropDownPicker from 'react-native-dropdown-picker';
+
 //Validação do formulario
 const schema = yup.object({
   nomeReceita: yup.string().required("Selecione o tipo da sua receita"),
@@ -31,8 +33,8 @@ const NovaReceita = () => {
     resolver:yupResolver(schema)
   })
 
-  function handleSignIn(adicionar){
-    console.log(adicionar)
+  function handleSignIn(data){
+    console.log(data)
     navigation.goBack();
   }
 
@@ -50,21 +52,46 @@ const NovaReceita = () => {
 
   
   //Parei aqui
-  const [categoria, setCategoria] = useState();
+  const [categoria, setCategoria] = useState(null);
   const [valor, setValor] = useState();
   const [descricao, setDescricao] = useState();
   const [data, setData] = useState();
+  const [icon, setIcon] = useState(null);
 
   const {adicionar} = useContext(TransacaoContext)
 
 
-  
-  const dataListReceitas = [
-    {key:'1', value:'Investimentos'},
-    {key:'2', value:'Salário'},
-    {key:'3', value:'Pagamentos'},
-    {key:'4', value:'Vendas'},
-  ]
+  //DropdownPicker
+  const [open, setOpen] = useState(false);
+  const [items, setItems] = useState([
+
+    { key:'1',
+      label: "Investimentos",
+      value:'Investimentos',
+      icon: () => <Image source={require('../../assets/Images/ReceitasIcons/IconInvestimentos.png')} style={style.iconStyle} />
+    },
+
+    {
+    key:'2',
+    label: "Salário",
+    value:'Salário',
+    icon: () => <Image source={require('../../assets/Images/ReceitasIcons/IconSalario.png')} style={style.iconStyle} />
+    },
+
+    {
+      key:'3',
+      label: "Pagamentos",
+      value:'Pagamentos',
+      icon: () => <Image source={require('../../assets/Images/ReceitasIcons/IconPagamentos.png')} style={style.iconStyle} />
+    },
+
+    {
+      key:'4',
+      label: "Vendas",
+      value:'Vendas',
+      icon: () => <Image source={require('../../assets/Images/ReceitasIcons/IconVendas.png')} style={style.iconStyle} />
+    },
+  ]);
 
   const [fontsLoaded] = useFonts({
     InterRegular:require('../../assets/Fonts/InterRegular.ttf'),
@@ -84,7 +111,7 @@ const NovaReceita = () => {
       <View style={style.container}>
         <View>
           <View style={style.input}>
-            <Controller
+            {/* <Controller
               control={control}
               name="nomeReceita"
               render={({ field: { onChange, value } }) => (
@@ -121,14 +148,42 @@ const NovaReceita = () => {
                   maxHeight={300}
                 />
               )}
+            /> */}
+            <Controller
+              control={control}
+              name="nomeReceita"
+              defaultValue=""
+              render={({ field: { onChange, value } }) => (
+                <DropDownPicker
+                  open={open}
+                  value={categoria}
+                  items={items}
+                  setOpen={setOpen}
+                  setValue={setCategoria}
+                  setItems={setItems}
+                  placeholder="Selecione uma categoria"
+                  placeholderStyle={{
+                    fontWeight: "light",
+                    fontFamily: "InterLight",
+                    fontSize: 15,
+                    color: "#828387",
+                  }}
+                  dropDownContainerStyle={{
+                    backgroundColor: "#9BF500",
+                    flexDirection: "row",
+                    alignItems: "center",
+                    borderRadius: 19,
+                  }}
+                  itemStyle={{
+                    padding: 20,
+                    borderRadius: 19,
+                    marginBottom: 20,
+                    borderWidth: errors.Descricao && 3,
+                    borderColor: errors.Descricao && "red",
+                  }}
+                />
+              )}
             />
-
-            {/* Estilização da minha mensagem de erro */}
-            {errors.nomeReceita && (
-              <Text style={style.labelError}>
-                {errors.nomeReceita?.message}
-              </Text>
-            )}
           </View>
 
           <View>
@@ -147,13 +202,17 @@ const NovaReceita = () => {
                     borderWidth: errors.Descricao && 3,
                     borderColor: errors.Descricao && "red",
                   }}
-                  onChangeText={(text) => setValor(text)}
+                  //onChangeText={(text) => setValor(text)}
+                  onChangeText={(text) => {
+                    onChange(text); // Atualize o valor no react-hook-form
+                    setValor(text); // Atualize o valor localmente
+                  }}
                   render={(props) => (
                     <TextInputMask
                       {...props}
                       type={"money"}
                       options={{
-                        maskType: "BRL"
+                        maskType: "BRL",
                       }}
                     />
                   )}
@@ -179,7 +238,11 @@ const NovaReceita = () => {
               render={({ field: { onChange, value } }) => (
                 <TextInput
                   style={{ marginBottom: 10, height: 45 }}
-                  onChangeText={(text) => setDescricao(text)}
+                  //onChangeText={(text) => setDescricao(text)}
+                  onChangeText={(text) => {
+                    onChange(text); // Atualize o valor no react-hook-form
+                    setDescricao(text); // Atualize o valor localmente
+                  }}
                   value={descricao}
                   outlineStyle={{
                     borderRadius: 10,
@@ -228,7 +291,11 @@ const NovaReceita = () => {
                     />
                   )}
                   value={data}
-                  onChangeText={(text) => setData(text)}
+                  //onChangeText={(text) => setData(text)}
+                  onChangeText={(text) => {
+                    onChange(text); // Atualize o valor no react-hook-form
+                    setData(text); // Atualize o valor localmente
+                  }}
                   label="Data"
                   activeOutlineColor="#75B700"
                   inputStyles={{ fontSize: 15, color: "#828387" }}
@@ -264,12 +331,15 @@ const NovaReceita = () => {
             <Text>Lembrete</Text>
           </View>
 
-          <View style={{ justifyContent: "center", alignItems: "center"}}>
+          <View style={{ justifyContent: "center", alignItems: "center" }}>
             {/* Envolvi minhas duas chamadas de função em uma anonima */}
-            <TouchableOpacity onPress={ () => {
-              adicionar(categoria, valor, descricao, data);
-              handleSubmit(handleSignIn)()
-              }}>
+            <TouchableOpacity
+              onPress={() => {
+                adicionar(categoria, valor, descricao, data, icon);
+                //handleSubmit(handleSignIn)();
+                handleSignIn(data);
+              }}
+            >
               <View style={style.Button}>
                 <Text>Adicionar</Text>
               </View>
@@ -323,6 +393,11 @@ const style = StyleSheet.create({
     alignSelf: 'flex-start',
     color: 'red',
     marginBottom: 10
+  },
+
+  iconStyle:{
+    width: 36,
+    height: 36,
   }
   
 });

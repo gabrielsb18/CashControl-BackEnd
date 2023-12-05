@@ -1,5 +1,5 @@
 import IconAlimento from '../../assets/Images/IconAlimento.png';
-import IconVariedade from '../../assets/Images/IconVariedade.png'
+import IconVariedade from "../../assets/Images/IconVariedade.png";
 
 export const transactions = [
   
