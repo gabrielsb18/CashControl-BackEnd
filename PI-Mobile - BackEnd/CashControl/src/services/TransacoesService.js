@@ -17,7 +17,7 @@ const listarTransacoesPeloId = async (id) => {
 const listarTodasTransacoes = async () => {
     try {
       const transacoes = [];
-      const response = await axios.get(`${BASE_URL}/contatos/data.json`);
+      const response = await axios.get(`${BASE_URL}/transacoes/data.json`);
   
       for (name in response.data) {
         transacoes.push({ id: name, ...response.data[name] });
@@ -31,15 +31,16 @@ const listarTodasTransacoes = async () => {
 }
 
 //Post criar um contato
-const criarTransacao = async(categoria, valor, descricao, data) => {
+const criarTransacao = async(categoria, valor, descricao, data, icon) => {
     try {
         const response = await axios.post(`${BASE_URL}/transacoes/data.json`,{
             categoria,
             valor,
             descricao,
-            data
+            data,
+            icon,
         });
-        return {id: response.data.name, categoria, valor, descricao, data };
+        return {id: response.data.name, categoria, valor, descricao, data, icon };
     }catch (error) {
         console.log(error)
     }
@@ -47,7 +48,7 @@ const criarTransacao = async(categoria, valor, descricao, data) => {
 
 const excluirTransacao = async(id) => {
     try {
-        await axios.delete(`${BASE_URL}/contatos.data.json?name = ${id}.json`)
+        await axios.delete(`${BASE_URL}/transacoes.data.json?name = ${id}.json`)
     }catch (error) {
         console.log(error)
     }

@@ -7,9 +7,9 @@ const TransacaoContext = createContext();
 const TransacaoProvider = ({ children }) => {
   const [transacoes, setTransacoes] = useState([]);
 
-  const adicionar = async(categoria, valor, descricao, data) => {
+  const adicionar = async(categoria, valor, descricao, data, icon) => {
     try{
-        const novaTransacao = await criarTransacao(categoria, valor, descricao, data);
+        const novaTransacao = await criarTransacao(categoria, valor, descricao, data, icon);
         setTransacoes([...transacoes, novaTransacao]);
     } catch {
         console.log(error.message)
@@ -47,7 +47,7 @@ const TransacaoProvider = ({ children }) => {
 
   
   return (
-    <TransacaoContext.Provider value={{ transacoes, adicionar, remover, buscar, listar }}>
+    <TransacaoContext.Provider value={{ transacoes, adicionar, buscar, remover, listar }}>
       {children}
     </TransacaoContext.Provider>
   );
