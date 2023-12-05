@@ -9,15 +9,19 @@ import {ContentFlat,
   DetailsTransaction,
   NameTransaction,
   SubtitleTransaction,
-  AmountTransaction} from '../../src/Utils/style.ts';
+  AmountTransaction,
+DataTransaction} from '../../src/Utils/style.ts';
 import { useState, useEffect } from "react";
 import { FlatList } from 'react-native-gesture-handler';
 import { Footer } from '../../src/Utils/style.ts';
 import { transactions } from '../../src/Utils/Transactions.js';
 import { somarValores } from "../../src/Utils/Transactions.js";
 import Header from "../../src/components/Header/Header";
+import { useContext } from "react";
+import { TransacaoContext } from "../../src/Contexts/TransacoesContext";
 
 const Statistics = () => {
+  const {transacoes, listar, remover} = useContext(TransacaoContext);
 
   //Carrossel dos meses
   const mesesDoAno = [
@@ -146,26 +150,26 @@ const Statistics = () => {
       <View style = {style.textsTr}>
         <Text style = {style.TitleTr}>Transações</Text>
       </View>
-        <Footer>
+      <Footer>
           <FlatList
-            data={list}
+            data={transacoes}
+            keyExtractor={(item) => item.id.toString()}
             renderItem={({ item }) => (
               <ContentFlat>
-                <IconTransaction source={item.Icon} />
+                <IconTransaction source={require("../../assets/Images/IconVariedade.png")} />
                 <DetailsTransaction>
-                  <NameTransaction>{item.title}</NameTransaction>
-                  <SubtitleTransaction>{item.subtitle}</SubtitleTransaction>
+                  <NameTransaction>{item.categoria}</NameTransaction>
+                  <SubtitleTransaction>{item.descricao}</SubtitleTransaction>
+                  <DataTransaction>{item.data}</DataTransaction>  
                 </DetailsTransaction>
                 <AmountTransaction
-                  style={item.type === 1 ? style.value : style.expenses}
                 >
-                  {item.type === 1 ? `R$ ${item.value}` : `R$ ${item.Amount}`}
+                  {item.valor}
                 </AmountTransaction>
               </ContentFlat>
             )}
             overScrollMode="never" /*Desativa o efeito de limite de rolagem */
             scrollEnabled={true} /*Desativa o scrool da minha lista  */
-            keyExtractor={(item, index) => index.toString()}
           />
         </Footer>
     </View>
