@@ -2,7 +2,7 @@ import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity} from "reac
 import {Picker} from '@react-native-picker/picker';
 import { useFonts } from "expo-font";
 import React from "react";
-import GoBack from "../../src/components/GoBack/goBack";
+import { Dimensions } from 'react-native';
 import { Searchbar } from 'react-native-paper';
 import {ContentFlat,
   IconTransaction,
@@ -20,8 +20,28 @@ import Header from "../../src/components/Header/Header";
 import { useContext } from "react";
 import { TransacaoContext } from "../../src/Contexts/TransacoesContext";
 
+import { somarValoresFirebase } from "../../src/services/TransacoesService";
+
 const Statistics = () => {
+  const windowWidth = Dimensions.get('window').width;
   const {transacoes, listar, remover} = useContext(TransacaoContext);
+
+  const [carregando, setCarregando] = useState (false)
+  useEffect(() => {
+    const fetchData = async () => {
+      setCarregando(true);
+      try {
+        await new Promise(resolve => setTimeout(resolve, 300));
+        await listar();
+      } catch (error) {
+        console.error('Erro ao carregar dados:', error);
+      } finally {
+        setCarregando(false);
+      }
+    };
+  
+    fetchData();
+  }, []);
 
   //Carrossel dos meses
   const mesesDoAno = [
@@ -52,16 +72,24 @@ const Statistics = () => {
     // Retorna a lista filtrada apenas se um mês estiver selecionado
     return transactions.filter(item => item.month.startsWith(selectedMonth));
   };
-  
-  
-  const [totalGastos, setTotalGastos] = useState(0);
 
-  //Total Gastos do Mês
+  const [outraTransacao, SetOutraTransacao] = useState([]);
+  const [totalGastos, setTotalGastos] = useState("0.00");
+  const adicionarTransacao = (novaTransacao) => {
+    SetOutraTransacao((transacoesAtuais) => [
+      ...transacoesAtuais,
+      novaTransacao,
+    ]);
+  };
+
   useEffect(() => {
-    //Sempre que esta lista de trasnsações mudar, irá chamar essa função
-    const total = somarValores(transactions);
-    setTotalGastos(total);
-  },[transactions])
+    const obterTotalGastos = async () => {
+      const total = await somarValoresFirebase(transacoes);
+      setTotalGastos(total);
+    };
+
+    obterTotalGastos();
+  }, [transacoes]);
 
   //SearcBar
   const [list, setList] = useState(transactions);
@@ -97,6 +125,7 @@ const Statistics = () => {
   return (
     <View style={style.container}>
       <Header title="Histórico"/>
+      <ScrollView showsVerticalScrollIndicator={false}>
       <View style={style.textTitle}>
         <Text
           style={{ fontFamily: "InterLight", fontSize: 18, letterSpacing: -1 }}
@@ -109,13 +138,13 @@ const Statistics = () => {
           R$ {totalGastos}
         </Text>
       </View>
-      <View>
+      <View style={{justifyContent: 'center', alignItems: 'center'}}> 
         <Image
           source={require("../../assets/Images/Grafico.png")}
           style={style.imgGraph}
         />
       </View> 
-      <View style={style.container2}>
+      <View style={style.scroolMonths}>
       <ScrollView
         horizontal
         pagingEnabled
@@ -127,9 +156,8 @@ const Statistics = () => {
     </View>
       <View
         style={{
-          width: 385,
-          height: 85,
           padding: 15,
+          paddingTop: 0,
           justifyContent: "center",
           alignItems: "center",
           //backgroundColor: 'red',
@@ -141,21 +169,23 @@ const Statistics = () => {
           onChangeText={(s) => setSearchQuery(s)}
           value={searchQuery}
           style={{
+            width: '100%',
             backgroundColor: "lightgray",
             borderRadius: 9,
-            margin: 10,
+            margin: '5%',
+            marginBottom: 0
           }}
         />
       </View>
       <View style = {style.textsTr}>
         <Text style = {style.TitleTr}>Transações</Text>
       </View>
-      <Footer>
-          <FlatList
+      <Footer style={{justifyContent: 'center', alignItems: 'center'}}>
+          <FlatList style={{width: '112%'}}
             data={transacoes}
             keyExtractor={(item) => item.id.toString()}
             renderItem={({ item }) => (
-              <ContentFlat>
+              <ContentFlat style={{width: '100%',}}>
                 <IconTransaction source={require("../../assets/Images/IconVariedade.png")} />
                 <DetailsTransaction>
                   <NameTransaction>{item.categoria}</NameTransaction>
@@ -169,9 +199,10 @@ const Statistics = () => {
               </ContentFlat>
             )}
             overScrollMode="never" /*Desativa o efeito de limite de rolagem */
-            scrollEnabled={true} /*Desativa o scrool da minha lista  */
+            scrollEnabled={false} /*Desativa o scrool da minha lista  */
           />
         </Footer>
+        </ScrollView>
     </View>
   );
 };
@@ -201,16 +232,21 @@ const style = StyleSheet.create({
     color:'red'
   },
 
-  container2: {
-    height: 50,
-    width: 316,
+  scroolMonths: {
     justifyContent: 'center',
     alignItems: 'center',
+    //backgroundColor: 'red',
+    
+    height: 50,
+    width: 326,
+    marginBottom: 14,
+    marginLeft: '5%',
+    marginRight: 0
   },
 
   scrollView: {
     height: 50,
-    width: 340,
+    width: 335,
     marginTop: 20,
     //backgroundColor: 'red'
   },
