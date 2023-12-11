@@ -1,15 +1,15 @@
 // TransacaoContext.js
 import React, { createContext, useContext, useState } from 'react';
-import {listarTransacoesPeloId, listarTodasTransacoes, criarTransacao, excluirTransacao} from "../services/TransacoesService"
+import {listarTransacoesPeloId, listarTodasTransacoes, criarTransacao, excluirTransacao, listarTodasTransacoesPorTipo, alterar} from "../services/TransacoesService"
 
 const TransacaoContext = createContext();
 
 const TransacaoProvider = ({ children }) => {
   const [transacoes, setTransacoes] = useState([]);
 
-  const adicionar = async(categoria, valor, descricao, data, icon) => {
+  const adicionar = async(tipo, categoria, valor, descricao, data, icon) => {
     try{
-        const novaTransacao = await criarTransacao(categoria, valor, descricao, data, icon);
+        const novaTransacao = await criarTransacao(tipo, categoria, valor, descricao, data, icon);
         setTransacoes([...transacoes, novaTransacao]);
     } catch {
         console.log(error.message)
@@ -25,6 +25,18 @@ const TransacaoProvider = ({ children }) => {
         console.log(error.message)
     }
   }
+
+  const listarPorTipo = async (tipo) => {
+    try {
+        //console.log('Chamando listarPorTipo com tipo:', tipo);
+        const listaAtualizada = await listarTodasTransacoesPorTipo(tipo);
+        //console.log('Lista atualizada:', listaAtualizada);
+        setTransacoes(listaAtualizada);
+    } catch (error) {
+        console.log('Erro em listarPorTipo:', error.message);
+    }
+};
+
   
   const buscar = async(id) => {
     try {
@@ -37,7 +49,7 @@ const TransacaoProvider = ({ children }) => {
   const remover = async(id) => {
     try {
         await excluirTransacao(id);
-        const index =transacoes.findIndex((transacoes) => transacoes.id === id);
+        const index = transacoes.findIndex((transacoes) => transacoes.id === id);
         transacoes.splice(index, 1)
         setTransacoes([...transacoes])
     } catch (error) {
@@ -45,9 +57,20 @@ const TransacaoProvider = ({ children }) => {
     }
   }
 
-  
+  const atualizar = async (id, categoria, valor, descricao, data,) => {
+    try {
+      const transacaoAtualizada = await alterar(id, categoria, valor, descricao, data);
+      const listaAtualizada = transacoes.map((transacoes) =>
+      transacoes.id === id ? transacaoAtualizada : transacoes
+      );
+      setContatos(listaAtualizada);
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
   return (
-    <TransacaoContext.Provider value={{ transacoes, adicionar, buscar, remover, listar }}>
+    <TransacaoContext.Provider value={{ transacoes, adicionar, buscar, remover, listar, listarPorTipo, atualizar }}>
       {children}
     </TransacaoContext.Provider>
   );
