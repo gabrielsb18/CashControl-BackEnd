@@ -1,4 +1,5 @@
 import axios from 'axios';
+import BigDecimal from 'bigdecimal';
 
 const BASE_URL = "https://cash-control---back-end-default-rtdb.firebaseio.com/"
 
@@ -54,4 +55,30 @@ const excluirTransacao = async(id) => {
     }
 }
 
+export const somarValoresFirebase = async () => {
+    try {
+      const transactions = await listarTodasTransacoes();
+  
+      if (!transactions || transactions.length === 0) {
+        return '0.00';
+      }
+  
+      const total = transactions.reduce((acc, transaction) => {
+        const valorNumerico = parseFloat(
+          transaction.valor
+            .replace(/[^\d,-]/g, '') // Remove caracteres não numéricos, exceto vírgulas e hífens
+            .replace(',', '.') // Substitui vírgula por ponto
+        );
+  
+        // Verifica se é um número válido antes de somar
+        return !isNaN(valorNumerico) ? acc + valorNumerico : acc;
+      }, 0);
+  
+      return total.toFixed(2);
+    } catch (error) {
+      console.error('Erro ao obter dados do Firebase:', error);
+      return '0.00';
+    }
+  };
+  
 export {listarTransacoesPeloId, listarTodasTransacoes, criarTransacao, excluirTransacao};
