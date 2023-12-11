@@ -63,7 +63,7 @@ const style = StyleSheet.create({
     alignItems: 'center',
     marginRight: 350,
     marginLeft: 45,
-    backgroundColor: 'red', // visualização da area de toque do botão
+    //backgroundColor: 'red', // visualização da area de toque do botão
     width: 50,
     height: 50,
   }

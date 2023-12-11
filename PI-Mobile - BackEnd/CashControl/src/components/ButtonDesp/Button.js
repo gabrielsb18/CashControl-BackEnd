@@ -30,20 +30,22 @@ export default function Button_Desp_e_Rec () {
 const styles = StyleSheet.create({
     
     viewreceitas:{
-        width: '84%',
+        flex: 1,
+        width: '100%',
         height: '16%',
-        marginTop: -20 /*margin do topo*/
+        //marginTop: -20, /*margin do topo*/
+        //backgroundColor: 'red',
+        padding: '5%'
     },
 
     receitas: {
+        justifyContent: 'center',
+        alignItems: 'center',
         width: '100%',
         height: 94,
         backgroundColor: '#75B700',
         borderRadius: 46,
         flexDirection: 'row',
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginTop: 20,
     },
     
     imgSeta: {

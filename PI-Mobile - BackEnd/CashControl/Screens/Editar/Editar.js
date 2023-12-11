@@ -27,19 +27,29 @@ const schema = yup.object({
   Date: yup.string().required("Digite a data para lembrete"),
 })
 
-const NovaReceita = () => {
+const Editar = ({route, navigation}) => {
+
+    const { TransacoesId } = route.params;
+    const { buscar, atualizar } = useContext(TransacaoContext);
+  
+    useEffect(() => {
+        buscar(TransacoesId).then((transacoes) => {
+          setCategoria(transacoes.categoria);
+          setValor(transacoes.valor);
+          setDescricao(transacoes.descricao);
+          setData(transacoes.data)
+        });
+      }, []);
+
+
   const {control, handleSubmit, formState: {errors}} = useForm ({
     resolver:yupResolver(schema)
   })
 
-  function handleSignIn(data){
-    navigation.goBack();
-  }
-
-  const navigation = useNavigation();
-  const buttonNav = () => {
-    navigation.navigate('Receitas')
-  }
+//   const navigation = useNavigation();
+//   const buttonNav = () => {
+//     navigation.navigate('Receitas')
+//   }
 
   const [checked, setChecked] = useState(null);
   const [selected, setSelected] = useState("");
@@ -157,6 +167,7 @@ const NovaReceita = () => {
               defaultValue=""
               render={({ field: { onChange, value } }) => (
                 <DropDownPicker
+                  onChangeText={(text) => setCategoria(text)}
                   open={open}
                   value={categoria}
                   items={items}
@@ -183,7 +194,7 @@ const NovaReceita = () => {
                     borderWidth: errors.Descricao && 3,
                     borderColor: errors.Descricao && "red",
                   }}
-                  onChange={(e) => setCategoriaReceita(e.target.value)}
+                  //onChange={(e) => setCategoriaReceita(e.target.value)}
                 />
               )}
             />
@@ -205,11 +216,11 @@ const NovaReceita = () => {
                     borderWidth: errors.Descricao && 3,
                     borderColor: errors.Descricao && "red",
                   }}
-                  //onChangeText={(text) => setValor(text)}
-                  onChangeText={(text) => {
-                    onChange(text); // Atualize o valor no react-hook-form
-                    setValor(text); // Atualize o valor localmente
-                  }}
+                  onChangeText={(text) => setValor(text)}
+                //   onChangeText={(text) => {
+                //     onChange(text); // Atualize o valor no react-hook-form
+                //     setValor(text); // Atualize o valor localmente
+                //   }}
                   render={(props) => (
                     <TextInputMask
                       {...props}
@@ -242,10 +253,11 @@ const NovaReceita = () => {
                 <TextInput
                   style={{ marginBottom: 10, height: 45 }}
                   //onChangeText={(text) => setDescricao(text)}
-                  onChangeText={(text) => {
-                    onChange(text); // Atualize o valor no react-hook-form
-                    setDescricao(text); // Atualize o valor localmente
-                  }}
+                //   onChangeText={(text) => {
+                //     onChange(text); // Atualize o valor no react-hook-form
+                //     setDescricao(text); // Atualize o valor localmente
+                //   }}
+                  onChangeText={(text) => setDescricao(text)}
                   value={descricao}
                   outlineStyle={{
                     borderRadius: 10,
@@ -338,9 +350,9 @@ const NovaReceita = () => {
             {/* Envolvi minhas duas chamadas de função em uma anonima */}
             <TouchableOpacity
               onPress={() => {
-                adicionar(categoria, valor, descricao, data, icon, "receita");
+                atualizar(categoria, valor, descricao, data, icon, "receita");
                 //handleSubmit(handleSignIn)();
-                handleSignIn(data);
+                navigation.pop()
               }}
             >
               <View style={style.Button}>
@@ -405,4 +417,4 @@ const style = StyleSheet.create({
   
 });
 
-export default NovaReceita;
+export default Editar;

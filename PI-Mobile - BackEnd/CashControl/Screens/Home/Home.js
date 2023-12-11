@@ -12,9 +12,57 @@ import {ContentFlat,
     DetailsTransaction,
     NameTransaction,
     SubtitleTransaction,
-    AmountTransaction,} from '../../src/Utils/style.ts';
+    AmountTransaction,
+    DataTransaction} from '../../src/Utils/style.ts';
+
+import { useContext, useEffect } from 'react';
+import { TransacaoContext } from "../../src/Contexts/TransacoesContext";
+import { somarDespesas, somarReceitas } from "../../src/services/TransacoesService";
     
 export default function Home() {
+  const {transacoes, listar, remover, listarPorTipo} = useContext(TransacaoContext);
+
+  const [carregando, setCarregando] = useState (false)
+  useEffect(() => {
+    const fetchData = async () => {
+      //console.log("Iniciando carregamento...");
+      setCarregando(true);
+      try {
+        await new Promise((resolve) => setTimeout(resolve, 10));
+        await listar();
+        //console.log("Dados carregados com sucesso:", transacoes);
+      } catch (error) {
+        //console.error("Erro ao carregar dados:", error);
+      } finally {
+        //console.log("Finalizando carregamento...");
+        setCarregando(false);
+    }
+    };
+
+    fetchData();
+}, [])
+
+
+const [totalReceitas, setTotalReceitas] = useState("0.00");
+useEffect(() => {
+  const obterTotalReceitas = async () => {
+    const total = await somarReceitas(transacoes);
+    setTotalReceitas(total);
+  };
+
+  obterTotalReceitas();
+}, [transacoes]);
+
+const [totalGastos, setTotalGastos] = useState("0.00");
+useEffect(() => {
+  const obterTotalGastos = async () => {
+    const total = await somarDespesas(transacoes);
+    setTotalGastos(total);
+  };
+
+  obterTotalGastos();
+}, [transacoes]);
+
   const [showValue, setShowValue] = useState (false)
   
   /* Lógica Botão Menu*/
@@ -37,78 +85,116 @@ export default function Home() {
 
   return (
     <View style={styles.container}>
-      <ScrollView showsVerticalScrollIndicator={false} style ={{width: '100%'}}>
-      {/*BARRA DE STATUS DO TOP*/}
-      {/*<StatusBar style="auto" />*/}
-      <LinearGradient
-      colors = {['rgba(155, 245, 0, 1)', 'rgba(120, 189, 0, 1)']}
-      style = {styles.headerHome}>
-        <View style = {styles.row1}>
-          <TouchableOpacity>
-            <Image
-            source = {require('../../assets/Images/Perfil_Usuario.png')} style = {styles.imgProfile}/> 
-          </TouchableOpacity>
-          <TouchableOpacity onPress={abridrawer}> 
-            <Image
-            source = {require('../../assets/Images/Button_menu.png')} style = {styles.imgMenu}/>
-          </TouchableOpacity>
-        </View>
-          <Text style = {styles.msgWelcome}>Bem Vindo(a) {'\n'}Usuário</Text>
-      </LinearGradient>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        style={{ width: "100%" }}
+      >
+        {/*BARRA DE STATUS DO TOP*/}
+        {/*<StatusBar style="auto" />*/}
+        <LinearGradient
+          colors={["rgba(155, 245, 0, 1)", "rgba(120, 189, 0, 1)"]}
+          style={styles.headerHome}
+        >
+          <View style={styles.row1}>
+            <TouchableOpacity>
+              <Image
+                source={require("../../assets/Images/Perfil_Usuario.png")}
+                style={styles.imgProfile}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={abridrawer}>
+              <Image
+                source={require("../../assets/Images/Button_menu.png")}
+                style={styles.imgMenu}
+              />
+            </TouchableOpacity>
+          </View>
+          <Text style={styles.msgWelcome}>Bem Vindo(a) {"\n"}Usuário</Text>
+        </LinearGradient>
 
-      <View style ={{width:"100%", alignItems:'center',}}>
-        <View style ={styles.saldoTotal}>
-          <Text style ={{letterSpacing: -0.3, fontSize: 15, fontFamily: 'InterLight'}}>Seu saldo total</Text>
-          <Text style ={{fontSize: 32, marginTop: 16, fontFamily: 'InterBold' }}>R$ 5.000,00</Text>
-          <TouchableOpacity>
-          <Image
-          source = {require('../../assets/Images/Eye_Saldo.png')} style = {styles.imgEye}/>
-          </TouchableOpacity>
+        <View style={{ width: "100%", alignItems: "center" }}>
+          <View style={styles.saldoTotal}>
+            <Text
+              style={{
+                letterSpacing: -0.3,
+                fontSize: 15,
+                fontFamily: "InterLight",
+              }}
+            >
+              Seu saldo total
+            </Text>
+            <Text
+              style={{ fontSize: 32, marginTop: 16, fontFamily: "InterBold" ,justifyContent: 'center', alignItems: 'center'}}
+            >
+              R$ {totalReceitas}
+            </Text>
+            <TouchableOpacity>
+              <Image
+                source={require("../../assets/Images/Eye_Saldo.png")}
+                style={styles.imgEye}
+              />
+            </TouchableOpacity>
+          </View>
         </View>
-      
-      </View>
-        <View style = {styles.viewTransacoes}>
+        <View style={styles.viewTransacoes}>
           <View style={styles.box1}>
-            <Text>R$ 135,00</Text>
+            <Text>R$ {totalReceitas}</Text>
             <Image
-            source = {require('../../assets/Images/Arrow2.png')} style = {{marginLeft: 10}}/>
+              source={require("../../assets/Images/Arrow2.png")}
+              style={{ marginLeft: 10 }}
+            />
           </View>
           <View style={styles.box2}>
-            <Text styles ={{marginLeft: 20,}}>R$ 834,90</Text>
+            <Text styles={{ marginLeft: 20 }}>R${totalGastos}</Text>
             <Image
-            source = {require('../../assets/Images/Arrow1.png')} style = {{marginLeft: 10}}/>
-          </View>      
-        </View>
-        
-        <Button_Desp_e_Rec/>
-        
-        <View style = {styles.textsTr}>
-            <Text style = {styles.TitleTr}>Últimas transações</Text>
-            <TouchableOpacity>
-                <Text style = {styles.textView}>View All</Text>
-            </TouchableOpacity>
+              source={require("../../assets/Images/Arrow1.png")}
+              style={{ marginLeft: 10 }}
+            />
+          </View>
         </View>
 
-      {/*Lista de ultimas transações*/}
-      <Footer>
-        <FlatList
+        <Button_Desp_e_Rec />
+
+        <View style={styles.textsTr}>
+          <Text style={styles.TitleTr}>Últimas transações</Text>
+          <TouchableOpacity onPress={() => navigation.navigate("Statistics")}>
+            <Text style={styles.textView}>View All</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/*Lista de ultimas transações*/}
+        <Footer>
+          <FlatList
             //ADICIONAR FUNÇÃO PARA EXIBIR SOMENTE OS 3 PRIMEIROS ITENS
-            data={transactions.slice(0, 3)}
-            renderItem={({ item }) =>(
-                    <ContentFlat>
-                            <IconTransaction source = {item.Icon}/>
-                            <DetailsTransaction>
-                                <NameTransaction>{item.title}</NameTransaction>
-                                <SubtitleTransaction>{item.subtitle}</SubtitleTransaction>
-                            </DetailsTransaction>
-                            <AmountTransaction style={item.type === 1 ? styles.value : styles.expenses}>{item.type === 1 ? `R$ ${item.value}` : `R$ ${item.Amount}`}</AmountTransaction>
-                    </ContentFlat>
+            data={transacoes.slice(0, 3).reverse()}
+            keyExtractor={(item) => item.id.toString()}
+            renderItem={({ item }) => (
+              <ContentFlat>
+                {item.tipo === "receita" ? (
+                  <IconTransaction
+                    source={require("../../assets/Images/IconVariedade.png")}
+                  />
+                ) : (
+                  <IconTransaction
+                    source={require("../../assets/Images/IconVariedade2.png")}
+                  />
+                )}
+                <DetailsTransaction>
+                  <NameTransaction>{item.categoria}</NameTransaction>
+                  <SubtitleTransaction>{item.descricao}</SubtitleTransaction>
+                  <DataTransaction>{item.data}</DataTransaction>
+                </DetailsTransaction>
+                <AmountTransaction
+                  style={{ color: item.tipo === "receita" ? "#75B700" : "red" }}
+                >
+                  {item.valor}
+                </AmountTransaction>
+              </ContentFlat>
             )}
             overScrollMode="never" /*Desativa o efeito de limite de rolagem */
             scrollEnabled={false} /*Desativa o scrool da minha lista  */
-            />
-
-      </Footer>
+          />
+        </Footer>
       </ScrollView>
     </View>
   );

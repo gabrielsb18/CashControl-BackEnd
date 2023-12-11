@@ -4,6 +4,7 @@ import Home from "../../Screens/Home/Home";
 import ListagemDespEResp from "../../Screens/ListagemDespEResp/ListagemDespEResp";
 import NovaReceita from "../../Screens/AddDespEResp/NovaReceita";
 import NovaDespesa from "../../Screens/AddDespEResp/NovaDespesa";
+import Editar from "../../Screens/Editar/Editar";
 
 export default function StackRoutesTR() {
   const Stack = createNativeStackNavigator();
@@ -62,9 +63,28 @@ export default function StackRoutesTR() {
         name="NovaDespesa"
         component={NovaDespesa}
         options={{
-          headerShown: true,
+          headerShown: false,
           headerTitleAlign: "center",
           title: "Nova Despesa",
+          headerStyle: {
+            backgroundColor: "#9BF500",
+          },
+          headerShadowVisible: false,
+          headerTitleStyle: {
+            fontFamily: "InterRegular",
+            fontSize: 19,
+            fontWeight: "400",
+          },
+        }}
+      />
+
+      <Stack.Screen
+        name="Editar"
+        component={Editar}
+        options={{
+          headerShown: false,
+          headerTitleAlign: "center",
+          title: "Editar Transação",
           headerStyle: {
             backgroundColor: "#9BF500",
           },

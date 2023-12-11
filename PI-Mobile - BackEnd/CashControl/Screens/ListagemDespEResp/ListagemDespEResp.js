@@ -4,6 +4,7 @@ import { useFonts } from 'expo-font';
 import Receitas from "../Transactions/Receitas";
 import Despesas from "../Transactions/Despesas";
 import Header from "../../src/components/Header/Header";
+import {useState } from 'react';
 
 const TabGroup = createMaterialTopTabNavigator();
 
@@ -44,7 +45,7 @@ const ListagemDespEResp = () => {
           tabBarStyle: { backgroundColor: "#9BF500" },
         }}
       >
-        <TabGroup.Screen name="Receitas" component={Receitas} />
+        <TabGroup.Screen name="Receitas" component={Receitas}/>
         <TabGroup.Screen name="Despesas" component={Despesas} />
       </TabGroup.Navigator>
     </>
