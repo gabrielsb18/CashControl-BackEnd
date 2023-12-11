@@ -35,7 +35,10 @@ export default function routerDrawer2() {
       backgroundColor: 'white',
      
       borderColor: '#75B700',
-      borderWidth: 2,}}}
+      borderWidth: 2,
+      flex: 1,
+      height: '100%',
+      }}}
     
     drawerContent={(props) => <MenuItems {...props }/> }>
       
@@ -50,7 +53,7 @@ export default function routerDrawer2() {
             drawerLabelStyle: {
               fontFamily: 'InterLight',
               fontSize: 18,
-            },
+            }
         }}/>
       {/* atalho para a pilha com o tabNavigation */}
       <Drawer.Screen
@@ -72,8 +75,7 @@ export default function routerDrawer2() {
 const MenuItems = ({navigation}) => {
   
   return (
-    <DrawerContentScrollView
-    style={styles.container}>
+    <View style={styles.container}>
 
       {/* /*Perfil Usuario*/}
       <View style ={styles.perfilUser}>
@@ -89,13 +91,16 @@ const MenuItems = ({navigation}) => {
       <ButtonDrawerSair
         text = "Sair"
         onPress ={() => navigation.navigate('Profile')}/>
-    </DrawerContentScrollView>
+    </View>
   )
 }
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
+    height:'100%',
     padding: 15,
+    marginTop: 25,
   },
 
   title: {
