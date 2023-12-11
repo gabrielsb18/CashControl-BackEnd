@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Image, TouchableOpacity} from 'react-native';
+import { StyleSheet, Text, View, Image, TouchableOpacity, ScrollView} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import {LinearGradient} from 'expo-linear-gradient'; {/* lib gradiente do header*/}
@@ -37,6 +37,7 @@ export default function Home() {
 
   return (
     <View style={styles.container}>
+      <ScrollView showsVerticalScrollIndicator={false} style ={{width: '100%'}}>
       {/*BARRA DE STATUS DO TOP*/}
       {/*<StatusBar style="auto" />*/}
       <LinearGradient
@@ -104,9 +105,11 @@ export default function Home() {
                     </ContentFlat>
             )}
             overScrollMode="never" /*Desativa o efeito de limite de rolagem */
-            scrollEnabled={true} /*Desativa o scrool da minha lista  */
+            scrollEnabled={false} /*Desativa o scrool da minha lista  */
             />
+
       </Footer>
+      </ScrollView>
     </View>
   );
 }
@@ -144,7 +147,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginTop: 45,
-    padding: 20
+    padding: 20,
+    //backgroundColor: 'red',
   },
 
   msgWelcome: {
@@ -178,17 +182,18 @@ const styles = StyleSheet.create({
 
   viewTransacoes: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'space-around',
     alignItems: 'center',
     padding: 26,
-    marginTop:-66
+    marginTop:-66,
+    width: '100%'
+   //backgroundColor: 'red'
   },
 
   box1:{
     flexDirection: 'row',
     width: 119,
     height: 52,
-    marginRight: 32, /* espaçamento entre cada box*/
     padding: 16,
     backgroundColor:'rgba(117, 183, 0, 0.25)',
     borderRadius: 13,
@@ -198,7 +203,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     width: 119,
     height: 52,
-    marginLeft: 32,  /* ajuste do espaçamento do box*/
     backgroundColor:'rgba(255, 0, 0, 0.25)',
     padding: 16,
     borderRadius: 13,
